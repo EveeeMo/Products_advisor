@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  chatbot:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - ZHIPUAI_API_KEY=${ZHIPUAI_API_KEY}
+    volumes:
+      - .:/app
+    restart: always 
