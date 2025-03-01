@@ -32,9 +32,20 @@ client = ZhipuAI(api_key=os.getenv("ZHIPUAI_API_KEY"))
 @st.cache_data
 def load_products():
     try:
-        df = pd.read_excel('products.xlsx')
+        # 获取文件的绝对路径
+        file_path = 'products.xlsx'
+        st.write(f"尝试加载产品数据文件: {file_path}")
+        
+        if not os.path.exists(file_path):
+            st.error(f"产品数据文件不存在: {file_path}")
+            logging.error(f"产品数据文件不存在: {file_path}")
+            return None
+            
+        df = pd.read_excel(file_path)
+        st.success(f"成功加载产品数据：共 {len(df)} 条记录")
         return df
     except Exception as e:
+        st.error(f"读取产品数据时发生错误: {str(e)}")
         logging.error(f"读取产品数据时发生错误: {str(e)}")
         return None
 
@@ -566,8 +577,12 @@ if products_df is not None:
     with st.expander("查看产品概况"):
         st.write(get_product_info())
         st.write("\n### 所有产品列表：")
+        st.write(f"产品数据形状: {products_df.shape}")
+        st.write(f"产品数据列: {list(products_df.columns)}")
         for name in products_df['产品名称']:
             st.write(f"- {name}")
+else:
+    st.error("无法加载产品数据，请检查products.xlsx文件是否存在且格式正确。")
 
 # 显示聊天历史
 for message in st.session_state.messages:
